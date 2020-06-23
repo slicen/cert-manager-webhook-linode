@@ -1,54 +1,102 @@
-# ACME webhook example
+# Cert-Manager ACME DNS01 Webhook Solver for Linode DNS Manager
 
-The ACME issuer type supports an optional 'webhook' solver, which can be used
-to implement custom DNS01 challenge solving logic.
+[![Go Report Card](https://goreportcard.com/badge/github.com/slicen/cert-manager-webhook-linode)](https://goreportcard.com/report/github.com/slicen/cert-manager-webhook-linode)
+[![Releases](https://img.shields.io/github/v/release/slicen/cert-manager-webhook-linode?include_prereleases)](https://github.com/slicen/cert-manager-webhook-linode/releases)
+[![LICENSE](https://img.shields.io/github/license/slicen/cert-manager-webhook-linode)](https://github.com/slicen/cert-manager-webhook-linode/blob/master/LICENSE)
 
-This is useful if you need to use cert-manager with a DNS provider that is not
-officially supported in cert-manager core.
+A webhook to use [Linode DNS
+Manager](https://www.linode.com/docs/platform/manager/dns-manager) as a DNS01
+ACME Issuer for [cert-manager](https://github.com/jetstack/cert-manager).
 
-## Why not in core?
+## Installation
 
-As the project & adoption has grown, there has been an influx of DNS provider
-pull requests to our core codebase. As this number has grown, the test matrix
-has become un-maintainable and so, it's not possible for us to certify that
-providers work to a sufficient level.
+```bash
+helm install cert-manager-webhook-linode \
+  --namespace cert-manager \
+  https://github.com/slicen/cert-manager-webhook-linode/releases/download/v0.1.0/cert-manager-webhook-linode-v0.1.0.tgz
+```
 
-By creating this 'interface' between cert-manager and DNS providers, we allow
-users to quickly iterate and test out new integrations, and then packaging
-those up themselves as 'extensions' to cert-manager.
+## Usage
 
-We can also then provide a standardised 'testing framework', or set of
-conformance tests, which allow us to validate the a DNS provider works as
-expected.
+### Create Linode API Token Secret
 
-## Creating your own webhook
+```bash
+kubectl create secret generic linode-credentials \
+  --namespace=cert-manager \
+  --from-literal=token=<LINODE TOKEN>
+```
 
-Webhook's themselves are deployed as Kubernetes API services, in order to allow
-administrators to restrict access to webhooks with Kubernetes RBAC.
+### Create Issuer
 
-This is important, as otherwise it'd be possible for anyone with access to your
-webhook to complete ACME challenge validations and obtain certificates.
+#### Cluster-wide Linode API Token
 
-To make the set up of these webhook's easier, we provide a template repository
-that can be used to get started quickly.
+```yaml
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: example@example.com
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    solvers:
+    - dns01:
+      webhook:
+        solverName: linode
+        groupName: acme.slicen.me
+```
 
-### Creating your own repository
+By default, the Linode API token used will be obtained from the
+linode-credentials Secret in the same namespace as the webhook.
+
+
+#### Per Namespace Linode API Tokens
+
+If you would prefer to use separate Linode API tokens for each namespace (e.g.
+in a multi-tenant environment):
+
+```yaml
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: letsencrypt-staging
+  namespace: default
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: example@example.com
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    solvers:
+    - dns01:
+      webhook:
+        solverName: linode
+        groupName: acme.slicen.me
+        config:
+          apiKeySecretRef:
+            name: linode-credentials
+            key: token
+```
+
+## Development
 
 ### Running the test suite
 
-All DNS providers **must** run the DNS01 provider conformance testing suite,
-else they will have undetermined behaviour when used with cert-manager.
+Conformance testing is achieved through Kubernetes emulation via the
+kubebuilder-tools suite, in conjunction with real calls to the Linode API on an
+test domain, using a valid API token.
 
-**It is essential that you configure and run the test suite when creating a
-DNS01 webhook.**
+The test configures a cert-manager-dns01-tests TXT entry, attempts to verify its
+presence, and removes the entry, thereby verifying the Prepare and CleanUp
+functions.
 
-An example Go test file has been provided in [main_test.go]().
-
-You can run the test suite with:
+Run the test suite with:
 
 ```bash
-$ TEST_ZONE_NAME=example.com go test .
+./scripts/fetch-test-binaries.sh
+export LINODE_TOKEN=$(echo -n "<your API token>" | base64 -w 0)
+envsubst < testdata/linode/secret.yaml.example > testdata/linode/secret.yaml
+TEST_ZONE_NAME=yourdomain.com. make verify
 ```
-
-The example file has a number of areas you must fill in and replace with your
-own options in order for tests to pass.

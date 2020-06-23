@@ -1,25 +1,25 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "example-webhook.fullname" . }}
+  name: {{ include "cert-manager-webhook-linode.fullname" . }}
   labels:
-    app: {{ include "example-webhook.name" . }}
-    chart: {{ include "example-webhook.chart" . }}
+    app: {{ include "cert-manager-webhook-linode.name" . }}
+    chart: {{ include "cert-manager-webhook-linode.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "example-webhook.name" . }}
+      app: {{ include "cert-manager-webhook-linode.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "example-webhook.name" . }}
+        app: {{ include "cert-manager-webhook-linode.name" . }}
         release: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ include "example-webhook.fullname" . }}
+      serviceAccountName: {{ include "cert-manager-webhook-linode.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -27,9 +27,16 @@ spec:
           args:
             - --tls-cert-file=/tls/tls.crt
             - --tls-private-key-file=/tls/tls.key
+{{- if .Values.deployment.logLevel }}
+            - --v={{ .Values.deployment.logLevel }}
+{{- end }}
           env:
             - name: GROUP_NAME
-              value: {{ .Values.groupName | quote }}
+              value: {{ .Values.api.groupName | quote }}
+            - name: POD_SECRET_NAME
+              value: {{ .Values.deployment.secretName | quote }} 
+            - name: POD_SECRET_KEY
+              value: {{ .Values.deployment.secretKey | quote }} 
           ports:
             - name: https
               containerPort: 443
@@ -53,7 +60,7 @@ spec:
       volumes:
         - name: certs
           secret:
-            secretName: {{ include "example-webhook.servingCertificate" . }}
+            secretName: {{ include "cert-manager-webhook-linode.servingCertificate" . }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

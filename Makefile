@@ -1,20 +1,27 @@
-IMAGE_NAME := "webhook"
-IMAGE_TAG := "latest"
+IMAGE_NAME := "slicen/cert-manager-webhook-linode"
+IMAGE_TAG := "v0.1.0"
 
 OUT := $(shell pwd)/_out
 
 $(shell mkdir -p "$(OUT)")
 
+.DEFAULT_GOAL := build
+
+.PHONY: verify test build clean rendered-manifest.yaml
+
 verify:
 	go test -v .
 
-build:
-	docker build -t "$(IMAGE_NAME):$(IMAGE_TAG)" .
+test: verify
 
-.PHONY: rendered-manifest.yaml
+build:
+	docker build --rm -t "$(IMAGE_NAME):$(IMAGE_TAG)" -t "$(IMAGE_NAME):latest" .
+
+clean:
+	rm -r "$(OUT)"
+
 rendered-manifest.yaml:
 	helm template \
-	    --name example-webhook \
         --set image.repository=$(IMAGE_NAME) \
         --set image.tag=$(IMAGE_TAG) \
-        deploy/example-webhook > "$(OUT)/rendered-manifest.yaml"
+        deploy/cert-manager-webhook-linode > "$(OUT)/rendered-manifest.yaml"
