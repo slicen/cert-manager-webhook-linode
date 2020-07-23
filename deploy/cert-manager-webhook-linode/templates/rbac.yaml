@@ -86,7 +86,7 @@ roleRef:
 subjects:
   - apiGroup: ""
     kind: ServiceAccount
-    name: {{ include "cert-manager-webhook-linode.fullname" . }}
+    name: {{ default "cert-manager" .Values.certManagerServiceAccount }}
     namespace: {{ .Release.Namespace }}
 ---
 # Grant the webhook permission to read the Secret containing the Linode API token
