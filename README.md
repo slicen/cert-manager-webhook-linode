@@ -31,7 +31,7 @@ kubectl create secret generic linode-credentials \
 #### Cluster-wide Linode API Token
 
 ```yaml
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-staging
@@ -58,7 +58,7 @@ If you would prefer to use separate Linode API tokens for each namespace (e.g.
 in a multi-tenant environment):
 
 ```yaml
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: letsencrypt-staging
