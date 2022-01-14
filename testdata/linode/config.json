@@ -1,0 +1,6 @@
+{
+  "apiKeySecretRef": {
+    "name": "linode-credentials",
+    "key": "token"
+  }
+}
