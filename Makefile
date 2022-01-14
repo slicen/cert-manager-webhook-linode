@@ -1,5 +1,5 @@
 IMAGE_NAME := "slicen/cert-manager-webhook-linode"
-IMAGE_TAG := "v0.1.0"
+IMAGE_TAG := "v0.2.0"
 
 K8S_VERSION := "1.22.0"
 

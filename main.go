@@ -123,7 +123,7 @@ func (c *linodeDNSProviderSolver) getLinodeClient(ch *v1alpha1.ChallengeRequest)
 	}
 
 	linodeClient := linodego.NewClient(oauth2Client)
-	linodeClient.SetUserAgent(fmt.Sprintf("cert-manager-webhook-linode/v0.1.0 linodego/%s", linodego.Version))
+	linodeClient.SetUserAgent(fmt.Sprintf("cert-manager-webhook-linode/v0.2.0 linodego/%s", linodego.Version))
 
 	return &linodeClient, nil
 }
