@@ -8,8 +8,7 @@ import (
 )
 
 var (
-	zone               = os.Getenv("TEST_ZONE_NAME")
-	kubeBuilderBinPath = "./_out/kubebuilder/bin"
+	zone = os.Getenv("TEST_ZONE_NAME")
 )
 
 func TestRunsSuite(t *testing.T) {
