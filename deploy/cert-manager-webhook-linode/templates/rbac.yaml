@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ include "cert-manager-webhook-linode.fullname" . }}
+  namespace: {{ .Values.certManager.namespace | quote }}
   labels:
     app: {{ include "cert-manager-webhook-linode.name" . }}
     chart: {{ include "cert-manager-webhook-linode.chart" . }}
@@ -29,7 +30,7 @@ subjects:
   - apiGroup: ""
     kind: ServiceAccount
     name: {{ include "cert-manager-webhook-linode.fullname" . }}
-    namespace: {{ .Release.Namespace }}
+    namespace: {{ .Values.certManager.namespace | quote }}
 ---
 # apiserver gets the auth-delegator role to delegate auth decisions to
 # the core apiserver
@@ -50,7 +51,7 @@ subjects:
   - apiGroup: ""
     kind: ServiceAccount
     name: {{ include "cert-manager-webhook-linode.fullname" . }}
-    namespace: {{ .Release.Namespace }}
+    namespace: {{ .Values.certManager.namespace | quote }}
 ---
 # Grant cert-manager permission to validate using our apiserver
 apiVersion: rbac.authorization.k8s.io/v1
@@ -86,15 +87,15 @@ roleRef:
 subjects:
   - apiGroup: ""
     kind: ServiceAccount
-    name: {{ include "cert-manager-webhook-linode.fullname" . }}
-    namespace: {{ .Release.Namespace }}
+    name: {{ .Values.certManager.serviceAccountName }}
+    namespace: {{ .Values.certManager.namespace | quote }}
 ---
 # Grant the webhook permission to read the Secret containing the Linode API token
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ include "cert-manager-webhook-linode.fullname" . }}:secret-reader
-  namespace: {{ .Release.Namespace | quote }}
+  namespace: {{ .Values.certManager.namespace | quote }}
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
@@ -105,12 +106,12 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ include "cert-manager-webhook-linode.fullname" . }}:secret-reader
-  namespace: {{ .Release.Namespace | quote }}
+  namespace: {{ .Values.certManager.namespace | quote }}
 subjects:
  - apiGroup: ""
    kind: ServiceAccount
    name: {{ include "cert-manager-webhook-linode.fullname" . }}
-   namespace: {{ .Release.Namespace | quote }}
+   namespace: {{ .Values.certManager.namespace | quote }}
 roleRef:
   kind: Role
   name: {{ include "cert-manager-webhook-linode.fullname" . }}:secret-reader

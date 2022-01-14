@@ -5,7 +5,7 @@ apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: {{ include "cert-manager-webhook-linode.selfSignedIssuer" . }}
-  namespace: {{ .Release.Namespace | quote }}
+  namespace: {{ .Values.certManager.namespace | quote }}
   labels:
     app: {{ include "cert-manager-webhook-linode.name" . }}
     chart: {{ include "cert-manager-webhook-linode.chart" . }}
@@ -21,7 +21,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: {{ include "cert-manager-webhook-linode.rootCACertificate" . }}
-  namespace: {{ .Release.Namespace | quote }}
+  namespace: {{ .Values.certManager.namespace | quote }}
   labels:
     app: {{ include "cert-manager-webhook-linode.name" . }}
     chart: {{ include "cert-manager-webhook-linode.chart" . }}
@@ -42,7 +42,7 @@ apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: {{ include "cert-manager-webhook-linode.rootCAIssuer" . }}
-  namespace: {{ .Release.Namespace | quote }}
+  namespace: {{ .Values.certManager.namespace | quote }}
   labels:
     app: {{ include "cert-manager-webhook-linode.name" . }}
     chart: {{ include "cert-manager-webhook-linode.chart" . }}
@@ -59,7 +59,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: {{ include "cert-manager-webhook-linode.servingCertificate" . }}
-  namespace: {{ .Release.Namespace | quote }}
+  namespace: {{ .Values.certManager.namespace | quote }}
   labels:
     app: {{ include "cert-manager-webhook-linode.name" . }}
     chart: {{ include "cert-manager-webhook-linode.chart" . }}
@@ -72,5 +72,5 @@ spec:
     name: {{ include "cert-manager-webhook-linode.rootCAIssuer" . }}
   dnsNames:
   - {{ include "cert-manager-webhook-linode.fullname" . }}
-  - {{ include "cert-manager-webhook-linode.fullname" . }}.{{ .Release.Namespace }}
-  - {{ include "cert-manager-webhook-linode.fullname" . }}.{{ .Release.Namespace }}.svc
+  - {{ include "cert-manager-webhook-linode.fullname" . }}.{{ .Values.certManager.namespace }}
+  - {{ include "cert-manager-webhook-linode.fullname" . }}.{{ .Values.certManager.namespace }}.svc

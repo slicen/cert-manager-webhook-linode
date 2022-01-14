@@ -15,5 +15,5 @@ spec:
   versionPriority: 15
   service:
     name: {{ include "cert-manager-webhook-linode.fullname" . }}
-    namespace: {{ .Release.Namespace | quote }}
+    namespace: {{ .Values.certManager.namespace | quote }}
   version: v1alpha1

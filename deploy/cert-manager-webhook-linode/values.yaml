@@ -9,6 +9,10 @@
 api:
   groupName: acme.slicen.me
 
+certManager:
+  namespace: cert-manager
+  serviceAccountName: cert-manager
+
 deployment:
   secretName: linode-credentials
   secretKey: token

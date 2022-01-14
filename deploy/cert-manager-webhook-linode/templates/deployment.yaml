@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "cert-manager-webhook-linode.fullname" . }}
+  namespace: {{ .Values.certManager.namespace | quote }}
   labels:
     app: {{ include "cert-manager-webhook-linode.name" . }}
     chart: {{ include "cert-manager-webhook-linode.chart" . }}
