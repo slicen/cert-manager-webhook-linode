@@ -40,6 +40,8 @@ func main() {
 		panic("GROUP_NAME must be specified")
 	}
 
+	klog.InitFlags(nil)
+
 	// This will register our external-dns DNS provider with the webhook serving
 	// library, making it available as an API under the provided GroupName.
 	// You can register multiple DNS provider implementations with a single
