@@ -17,6 +17,7 @@ deployment:
   secretName: linode-credentials
   secretKey: token
   logLevel: 6
+  imagePullSecret: ""
 
 image:
   repository: slicen/cert-manager-webhook-linode

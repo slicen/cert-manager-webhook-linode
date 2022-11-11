@@ -8,6 +8,10 @@ metadata:
     chart: {{ include "cert-manager-webhook-linode.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{- if .Values.deployment.imagePullSecret }}
+imagePullSecrets:
+  - name: {{ .Values.deployment.imagePullSecret }}
+{{- end }}
 ---
 # Grant the webhook permission to read the ConfigMap containing the Kubernetes
 # apiserver's requestheader-ca-certificate.
