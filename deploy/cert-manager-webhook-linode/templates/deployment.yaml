@@ -29,7 +29,7 @@ spec:
             - --tls-cert-file=/tls/tls.crt
             - --tls-private-key-file=/tls/tls.key
 {{- if .Values.deployment.logLevel }}
-            - --v={{ .Values.deployment.logLevel }}
+            - -v={{ .Values.deployment.logLevel }}
 {{- end }}
           env:
             - name: GROUP_NAME
