@@ -11,9 +11,11 @@ RUN go mod download
 
 FROM build_deps AS build
 
+ARG GOARCH=amd64
+
 COPY . .
 
-RUN CGO_ENABLED=0 go build -o webhook -ldflags '-w -extldflags "-static"' .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH="$GOARCH" go build -o webhook -ldflags '-w -extldflags "-static"' .
 
 FROM scratch
 
