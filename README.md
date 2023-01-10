@@ -43,9 +43,9 @@ spec:
       name: letsencrypt-staging
     solvers:
     - dns01:
-      webhook:
-        solverName: linode
-        groupName: acme.slicen.me
+        webhook:
+          solverName: linode
+          groupName: acme.slicen.me
 ```
 
 By default, the Linode API token used will be obtained from the
@@ -71,13 +71,13 @@ spec:
       name: letsencrypt-staging
     solvers:
     - dns01:
-      webhook:
-        solverName: linode
-        groupName: acme.slicen.me
-        config:
-          apiKeySecretRef:
-            name: linode-credentials
-            key: token
+        webhook:
+          solverName: linode
+          groupName: acme.slicen.me
+          config:
+            apiKeySecretRef:
+              name: linode-credentials
+              key: token
 ```
 
 ## Development
